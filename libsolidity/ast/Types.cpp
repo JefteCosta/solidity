@@ -2693,7 +2693,7 @@ string FunctionType::richIdentifier() const
 	string id = "t_function_";
 	switch (m_kind)
 	{
-	case Kind::Definition: solAssert(false, ""); break;
+	case Kind::Definition: id += "definition"; break;
 	case Kind::Internal: id += "internal"; break;
 	case Kind::External: id += "external"; break;
 	case Kind::DelegateCall: id += "delegatecall"; break;
@@ -2818,8 +2818,19 @@ string FunctionType::canonicalName() const
 
 string FunctionType::toString(bool _short) const
 {
-	solAssert(m_kind != Kind::Definition, "");
-	string name = "function (";
+	string name = "function ";
+	if (m_kind == Kind::Definition)
+	{
+		// TODO: is this a reasonable way to compute names for these?
+		auto const* functionDefinition = dynamic_cast<FunctionDefinition const*>(m_declaration);
+		solAssert(functionDefinition, "");
+		auto const* contract = dynamic_cast<ContractDefinition const*>(functionDefinition->scope());
+		solAssert(contract, "");
+		name += contract->name();
+		name += '.';
+		name += functionDefinition->name();
+	}
+	name += '(';
 	for (auto it = m_parameterTypes.begin(); it != m_parameterTypes.end(); ++it)
 		name += (*it)->toString(_short) + (it + 1 == m_parameterTypes.end() ? "" : ",");
 	name += ")";
@@ -2951,6 +2962,8 @@ MemberList::MemberMap FunctionType::nativeMembers(ContractDefinition const*) con
 {
 	switch (m_kind)
 	{
+	case Kind::Definition:
+		return {{"selector", TypeProvider::fixedBytes(4)}};
 	case Kind::External:
 	case Kind::Creation:
 	case Kind::BareCall:
@@ -3400,14 +3413,6 @@ MemberList::MemberMap TypeType::nativeMembers(ContractDefinition const* _current
 			auto const& currentBases = _currentScope->annotation().linearizedBaseContracts;
 			isBase = (find(currentBases.begin(), currentBases.end(), &contract) != currentBases.end());
 		}
-		if (contract.isLibrary())
-			for (FunctionDefinition const* function: contract.definedFunctions())
-				if (function->isVisibleAsLibraryMember())
-					members.emplace_back(
-						function->name(),
-						FunctionType(*function).asCallableFunction(true),
-						function
-					);
 		if (isBase)
 		{
 			// We are accessing the type of a base contract, so add all public and protected
@@ -3417,6 +3422,17 @@ MemberList::MemberMap TypeType::nativeMembers(ContractDefinition const* _current
 		}
 		else
 		{
+			bool inLibrary = contract.isLibrary();
+			for (FunctionDefinition const* function: contract.definedFunctions())
+				if (
+					(inLibrary && function->isVisibleAsLibraryMember()) ||
+					(!inLibrary && function->isPartOfExternalInterface())
+				)
+					members.emplace_back(
+						function->name(),
+						FunctionType(*function).asCallableFunction(inLibrary),
+						function
+					);
 			for (auto const& stru: contract.definedStructs())
 				members.emplace_back(stru->name(), stru->type(), stru);
 			for (auto const& enu: contract.definedEnums())
