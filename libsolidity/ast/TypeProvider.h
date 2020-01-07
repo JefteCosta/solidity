@@ -121,7 +121,7 @@ public:
 	}
 
 	/// @returns the internally-facing or externally-facing type of a function.
-	static FunctionType const* function(FunctionDefinition const& _function, bool _isInternal = true);
+	static FunctionType const* function(FunctionDefinition const& _function, FunctionType::Kind _kind);
 
 	/// @returns the accessor function type of a state variable.
 	static FunctionType const* function(VariableDeclaration const& _varDecl);

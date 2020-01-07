@@ -1055,7 +1055,8 @@ public:
 	};
 
 	/// Creates the type of a function.
-	explicit FunctionType(FunctionDefinition const& _function, bool _isInternal = true);
+	/// @arg _kind must be Kind::Internal or Kind::External.
+	explicit FunctionType(FunctionDefinition const& _function, Kind _kind);
 	/// Creates the accessor function type of a state variable.
 	explicit FunctionType(VariableDeclaration const& _varDecl);
 	/// Creates the function type of an event.
@@ -1066,7 +1067,7 @@ public:
 	FunctionType(
 		strings const& _parameterTypes,
 		strings const& _returnParameterTypes,
-		Kind _kind = Kind::Internal,
+		Kind _kind,
 		bool _arbitraryParameters = false,
 		StateMutability _stateMutability = StateMutability::NonPayable
 	): FunctionType(

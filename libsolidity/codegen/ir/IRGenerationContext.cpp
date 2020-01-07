@@ -76,13 +76,13 @@ FunctionDefinition const& IRGenerationContext::virtualFunction(FunctionDefinitio
 	// @TODO previously, we had to distinguish creation context and runtime context,
 	// but since we do not work with jump positions anymore, this should not be a problem, right?
 	string name = _function.name();
-	FunctionType functionType(_function);
+	FunctionType functionType(_function, FunctionType::Kind::Internal);
 	for (auto const& contract: m_inheritanceHierarchy)
 		for (FunctionDefinition const* function: contract->definedFunctions())
 			if (
 				function->name() == name &&
 				!function->isConstructor() &&
-				FunctionType(*function).asCallableFunction(false)->hasEqualParameterTypes(functionType)
+				FunctionType(*function, FunctionType::Kind::Internal).asCallableFunction(false)->hasEqualParameterTypes(functionType)
 			)
 				return *function;
 	solAssert(false, "Super function " + name + " not found.");

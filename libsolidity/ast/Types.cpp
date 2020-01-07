@@ -362,7 +362,7 @@ MemberList::MemberMap Type::boundFunctions(Type const& _type, ContractDefinition
 				seenFunctions.insert(function);
 				if (function->parameters().empty())
 					continue;
-				FunctionTypePointer fun = FunctionType(*function, false).asCallableFunction(true, true);
+				FunctionTypePointer fun = FunctionType(*function, FunctionType::Kind::External).asCallableFunction(true, true);
 				if (_type.isImplicitlyConvertibleTo(*fun->selfType()))
 					members.emplace_back(function->name(), fun, function);
 			}
@@ -1933,7 +1933,7 @@ MemberList::MemberMap ContractType::nativeMembers(ContractDefinition const* _con
 				if (!function->isVisibleInDerivedContracts() || !function->isImplemented())
 					continue;
 
-				auto functionType = TypeProvider::function(*function, true);
+				auto functionType = TypeProvider::function(*function, FunctionType::Kind::Internal);
 				bool functionWithEqualArgumentsFound = false;
 				for (auto const& member: members)
 				{
@@ -2465,12 +2465,16 @@ TypePointer TupleType::closestTemporaryType(Type const* _targetType) const
 	return TypeProvider::tuple(move(tempComponents));
 }
 
-FunctionType::FunctionType(FunctionDefinition const& _function, bool _isInternal):
-	m_kind(_isInternal ? Kind::Internal : Kind::External),
+FunctionType::FunctionType(FunctionDefinition const& _function, Kind _kind):
+	m_kind(_kind),
 	m_stateMutability(_function.stateMutability()),
 	m_declaration(&_function)
 {
-	if (_isInternal && m_stateMutability == StateMutability::Payable)
+	solAssert(
+		_kind == Kind::Internal || _kind == Kind::External,
+		"Only internal or external function types can be created from function definitions."
+	);
+	if (_kind == Kind::Internal && m_stateMutability == StateMutability::Payable)
 		m_stateMutability = StateMutability::NonPayable;
 
 	for (ASTPointer<VariableDeclaration> const& var: _function.parameters())
@@ -3392,7 +3396,7 @@ MemberList::MemberMap TypeType::nativeMembers(ContractDefinition const* _current
 				if (function->isVisibleAsLibraryMember())
 					members.emplace_back(
 						function->name(),
-						FunctionType(*function).asCallableFunction(true),
+						FunctionType(*function, FunctionType::Kind::Internal).asCallableFunction(true),
 						function
 					);
 		if (isBase)

@@ -713,7 +713,7 @@ void IRGeneratorForStatements::endVisit(MemberAccess const& _memberAccess)
 			if (auto const* variable = dynamic_cast<VariableDeclaration const*>(declaration))
 				identifier = FunctionType(*variable).externalIdentifier();
 			else if (auto const* function = dynamic_cast<FunctionDefinition const*>(declaration))
-				identifier = FunctionType(*function).externalIdentifier();
+				identifier = FunctionType(*function, FunctionType::Kind::Internal).externalIdentifier();
 			else
 				solAssert(false, "Contract member is neither variable nor function.");
 
