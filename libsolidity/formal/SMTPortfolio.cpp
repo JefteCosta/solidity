@@ -33,7 +33,7 @@ using namespace dev::solidity::smt;
 SMTPortfolio::SMTPortfolio(
 	map<h256, string> const& _smtlib2Responses,
 	ReadCallback::Callback const& _smtCallback,
-	SMTSolverChoice _enabledSolvers
+	[[maybe_unused]] SMTSolverChoice _enabledSolvers
 )
 {
 	m_solvers.emplace_back(make_unique<smt::SMTLib2Interface>(_smtlib2Responses, _smtCallback));
@@ -45,7 +45,6 @@ SMTPortfolio::SMTPortfolio(
 	if (_enabledSolvers.cvc4)
 		m_solvers.emplace_back(make_unique<smt::CVC4Interface>());
 #endif
-	(void)_enabledSolvers;
 }
 
 void SMTPortfolio::reset()
