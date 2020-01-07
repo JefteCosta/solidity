@@ -1051,7 +1051,8 @@ public:
 		ABIEncodeWithSignature,
 		ABIDecode,
 		GasLeft, ///< gasleft()
-		MetaType ///< type(...)
+		MetaType, ///< type(...)
+		Definition ///< Refers to a function definition without calling context (i.e. when accessed directly via the name of the containing contract). Cannot be called.
 	};
 
 	/// Creates the type of a function.
