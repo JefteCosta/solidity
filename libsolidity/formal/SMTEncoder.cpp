@@ -72,8 +72,8 @@ bool SMTEncoder::visit(ContractDefinition const& _contract)
 				if (
 					function->name() == baseFunction->name() &&
 					function->kind() == baseFunction->kind() &&
-					FunctionType(*function, FunctionType::Kind::Internal).asCallableFunction(false)->
-						hasEqualParameterTypes(*FunctionType(*baseFunction, FunctionType::Kind::Internal).asCallableFunction(false))
+					FunctionType(*function).asCallableFunction(false)->
+						hasEqualParameterTypes(*FunctionType(*baseFunction).asCallableFunction(false))
 				)
 				{
 					overridden = true;

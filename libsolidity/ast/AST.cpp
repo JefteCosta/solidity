@@ -365,12 +365,12 @@ TypePointer FunctionDefinition::type() const
 
 string FunctionDefinition::externalSignature() const
 {
-	return TypeProvider::function(*this, FunctionType::Kind::Internal)->externalSignature();
+	return TypeProvider::function(*this)->externalSignature();
 }
 
 string FunctionDefinition::externalIdentifierHex() const
 {
-	return TypeProvider::function(*this, FunctionType::Kind::Internal)->externalIdentifierHex();
+	return TypeProvider::function(*this)->externalIdentifierHex();
 }
 
 FunctionDefinitionAnnotation& FunctionDefinition::annotation() const

@@ -1516,7 +1516,7 @@ Json::Value CompilerStack::gasEstimates(string const& _contractName) const
 				gas = gasEstimator.functionalEstimation(*items, entry, *it);
 
 			/// TODO: This could move into a method shared with externalSignature()
-			FunctionType type(*it, FunctionType::Kind::Internal);
+			FunctionType type(*it);
 			string sig = it->name() + "(";
 			auto paramTypes = type.parameterTypes();
 			for (auto it = paramTypes.begin(); it != paramTypes.end(); ++it)

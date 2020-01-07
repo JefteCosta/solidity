@@ -466,14 +466,14 @@ FunctionDefinition const& CompilerContext::resolveVirtualFunction(
 )
 {
 	string name = _function.name();
-	FunctionType functionType(_function, FunctionType::Kind::Internal);
+	FunctionType functionType(_function);
 	auto it = _searchStart;
 	for (; it != m_inheritanceHierarchy.end(); ++it)
 		for (FunctionDefinition const* function: (*it)->definedFunctions())
 			if (
 				function->name() == name &&
 				!function->isConstructor() &&
-				FunctionType(*function, FunctionType::Kind::Internal).asCallableFunction(false)->hasEqualParameterTypes(functionType)
+				FunctionType(*function).asCallableFunction(false)->hasEqualParameterTypes(functionType)
 			)
 				return *function;
 	solAssert(false, "Super function " + name + " not found.");

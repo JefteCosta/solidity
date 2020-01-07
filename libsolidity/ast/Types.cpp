@@ -3405,7 +3405,7 @@ MemberList::MemberMap TypeType::nativeMembers(ContractDefinition const* _current
 				if (function->isVisibleAsLibraryMember())
 					members.emplace_back(
 						function->name(),
-						FunctionType(*function, FunctionType::Kind::Internal).asCallableFunction(true),
+						FunctionType(*function).asCallableFunction(true),
 						function
 					);
 		if (isBase)

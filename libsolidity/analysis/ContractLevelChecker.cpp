@@ -40,16 +40,10 @@ namespace
 template <class T, class B>
 bool hasEqualNameAndParameters(T const& _a, B const& _b)
 {
-	auto makeFunctionType = [](auto const& _decl) {
-		if constexpr (std::is_same_v<std::decay_t<decltype(_decl)>, FunctionDefinition>)
-			return FunctionType(_decl, FunctionType::Kind::Internal);
-		else
-			return FunctionType(_decl);
-	};
 	return
 		_a.name() == _b.name() &&
-		makeFunctionType(_a).asCallableFunction(false)->hasEqualParameterTypes(
-			*makeFunctionType(_b).asCallableFunction(false)
+		FunctionType(_a).asCallableFunction(false)->hasEqualParameterTypes(
+			*FunctionType(_b).asCallableFunction(false)
 		);
 }
 
@@ -194,7 +188,7 @@ void ContractLevelChecker::checkAbstractFunctions(ContractDefinition const& _con
 			if (!function->isConstructor())
 				registerFunction(
 					*function,
-					TypeProvider::function(*function, FunctionType::Kind::Internal)->asCallableFunction(false),
+					TypeProvider::function(*function)->asCallableFunction(false),
 					function->isImplemented()
 				);
 	}
@@ -337,7 +331,7 @@ void ContractLevelChecker::checkExternalTypeClashes(ContractDefinition const& _c
 		for (FunctionDefinition const* f: contract->definedFunctions())
 			if (f->isPartOfExternalInterface())
 			{
-				auto functionType = TypeProvider::function(*f, FunctionType::Kind::Internal);
+				auto functionType = TypeProvider::function(*f);
 				// under non error circumstances this should be true
 				if (functionType->interfaceFunctionType())
 					externalDeclarations[functionType->externalSignature()].emplace_back(

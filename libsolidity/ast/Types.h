@@ -1057,7 +1057,7 @@ public:
 
 	/// Creates the type of a function.
 	/// @arg _kind must be Kind::Internal or Kind::External.
-	explicit FunctionType(FunctionDefinition const& _function, Kind _kind);
+	explicit FunctionType(FunctionDefinition const& _function, Kind _kind = Kind::Definition);
 	/// Creates the accessor function type of a state variable.
 	explicit FunctionType(VariableDeclaration const& _varDecl);
 	/// Creates the function type of an event.

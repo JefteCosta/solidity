@@ -213,7 +213,7 @@ size_t ContractCompiler::deployLibrary(ContractDefinition const& _contract)
 void ContractCompiler::appendBaseConstructor(FunctionDefinition const& _constructor)
 {
 	CompilerContext::LocationSetter locationSetter(m_context, _constructor);
-	FunctionType constructorType(_constructor, FunctionType::Kind::Internal);
+	FunctionType constructorType(_constructor);
 	if (!constructorType.parameterTypes().empty())
 	{
 		solAssert(m_baseArguments, "");
@@ -256,7 +256,7 @@ void ContractCompiler::appendConstructor(FunctionDefinition const& _constructor)
 		// stack: <memptr> <argument size> <mem end>
 		CompilerUtils(m_context).storeFreeMemoryPointer();
 		// stack: <memptr> <argument size>
-		CompilerUtils(m_context).abiDecode(FunctionType(_constructor, FunctionType::Kind::Internal).parameterTypes(), true);
+		CompilerUtils(m_context).abiDecode(FunctionType(_constructor).parameterTypes(), true);
 	}
 	_constructor.accept(*this);
 }
@@ -420,8 +420,8 @@ void ContractCompiler::appendFunctionSelector(ContractDefinition const& _contrac
 
 			solAssert(!_contract.isLibrary(), "");
 			solAssert(etherReceiver->isReceive(), "");
-			solAssert(FunctionType(*etherReceiver, FunctionType::Kind::Internal).parameterTypes().empty(), "");
-			solAssert(FunctionType(*etherReceiver, FunctionType::Kind::Internal).returnParameterTypes().empty(), "");
+			solAssert(FunctionType(*etherReceiver).parameterTypes().empty(), "");
+			solAssert(FunctionType(*etherReceiver).returnParameterTypes().empty(), "");
 			etherReceiver->accept(*this);
 			m_context << Instruction::STOP;
 		}
@@ -434,8 +434,8 @@ void ContractCompiler::appendFunctionSelector(ContractDefinition const& _contrac
 				appendCallValueCheck();
 
 			solAssert(fallback->isFallback(), "");
-			solAssert(FunctionType(*fallback, FunctionType::Kind::Internal).parameterTypes().empty(), "");
-			solAssert(FunctionType(*fallback, FunctionType::Kind::Internal).returnParameterTypes().empty(), "");
+			solAssert(FunctionType(*fallback).parameterTypes().empty(), "");
+			solAssert(FunctionType(*fallback).returnParameterTypes().empty(), "");
 			fallback->accept(*this);
 			m_context << Instruction::STOP;
 		}
