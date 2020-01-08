@@ -1052,12 +1052,12 @@ public:
 		ABIDecode,
 		GasLeft, ///< gasleft()
 		MetaType, ///< type(...)
-		Definition ///< Refers to a function definition without calling context (i.e. when accessed directly via the name of the containing contract). Cannot be called.
+		Declaration ///< Refers to a function declaration without calling context (i.e. when accessed directly via the name of the containing contract). Cannot be called.
 	};
 
 	/// Creates the type of a function.
 	/// @arg _kind must be Kind::Internal or Kind::External.
-	explicit FunctionType(FunctionDefinition const& _function, Kind _kind = Kind::Definition);
+	explicit FunctionType(FunctionDefinition const& _function, Kind _kind = Kind::Declaration);
 	/// Creates the accessor function type of a state variable.
 	explicit FunctionType(VariableDeclaration const& _varDecl);
 	/// Creates the function type of an event.

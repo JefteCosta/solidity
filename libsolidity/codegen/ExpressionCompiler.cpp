@@ -550,7 +550,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			solAssert(function.kind() == FunctionType::Kind::DelegateCall || function.kind() == FunctionType::Kind::Internal, "");
 		switch (function.kind())
 		{
-		case FunctionType::Kind::Definition:
+		case FunctionType::Kind::Declaration:
 			solAssert(false, "Attempted to generate code for calling a function definition.");
 			break;
 		case FunctionType::Kind::Internal:
@@ -1300,7 +1300,7 @@ bool ExpressionCompiler::visit(MemberAccess const& _memberAccess)
 		functionType && member == "selector"
 	)
 	{
-		if (functionType->kind() == FunctionType::Kind::Definition)
+		if (functionType->kind() == FunctionType::Kind::Declaration)
 		{
 			m_context << functionType->externalIdentifier();
 			/// need to store it as bytes4

@@ -1709,7 +1709,7 @@ void TypeChecker::typeCheckFunctionCall(
 	solAssert(!!_functionType, "");
 	solAssert(_functionType->kind() != FunctionType::Kind::ABIDecode, "");
 
-	if (_functionType->kind() == FunctionType::Kind::Definition)
+	if (_functionType->kind() == FunctionType::Kind::Declaration)
 	{
 		m_errorReporter.typeError(
 			_functionCall.location(),

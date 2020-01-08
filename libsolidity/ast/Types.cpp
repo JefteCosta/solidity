@@ -2471,8 +2471,8 @@ FunctionType::FunctionType(FunctionDefinition const& _function, Kind _kind):
 	m_declaration(&_function)
 {
 	solAssert(
-		_kind == Kind::Internal || _kind == Kind::External || _kind == Kind::Definition,
-		"Only internal or external function types or function definition types can be created from function definitions."
+		_kind == Kind::Internal || _kind == Kind::External || _kind == Kind::Declaration,
+		"Only internal or external function types or function declaration types can be created from function definitions."
 	);
 	if (_kind == Kind::Internal && m_stateMutability == StateMutability::Payable)
 		m_stateMutability = StateMutability::NonPayable;
@@ -2693,7 +2693,7 @@ string FunctionType::richIdentifier() const
 	string id = "t_function_";
 	switch (m_kind)
 	{
-	case Kind::Definition: id += "definition"; break;
+	case Kind::Declaration: id += "declaration"; break;
 	case Kind::Internal: id += "internal"; break;
 	case Kind::External: id += "external"; break;
 	case Kind::DelegateCall: id += "delegatecall"; break;
@@ -2763,7 +2763,7 @@ BoolResult FunctionType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 	if (_convertTo.category() == category())
 	{
 		auto const& convertToType = dynamic_cast<FunctionType const&>(_convertTo);
-		return (m_kind == FunctionType::Kind::Definition) == (convertToType.kind() == FunctionType::Kind::Definition);
+		return (m_kind == FunctionType::Kind::Declaration) == (convertToType.kind() == FunctionType::Kind::Declaration);
 	}
 	return false;
 }
@@ -2819,7 +2819,7 @@ string FunctionType::canonicalName() const
 string FunctionType::toString(bool _short) const
 {
 	string name = "function ";
-	if (m_kind == Kind::Definition)
+	if (m_kind == Kind::Declaration)
 	{
 		// TODO: is this a reasonable way to compute names for these?
 		auto const* functionDefinition = dynamic_cast<FunctionDefinition const*>(m_declaration);
@@ -2962,7 +2962,7 @@ MemberList::MemberMap FunctionType::nativeMembers(ContractDefinition const*) con
 {
 	switch (m_kind)
 	{
-	case Kind::Definition:
+	case Kind::Declaration:
 		return {{"selector", TypeProvider::fixedBytes(4)}};
 	case Kind::External:
 	case Kind::Creation:
@@ -3170,7 +3170,7 @@ string FunctionType::externalSignature() const
 	case Kind::External:
 	case Kind::DelegateCall:
 	case Kind::Event:
-	case Kind::Definition:
+	case Kind::Declaration:
 		break;
 	default:
 		solAssert(false, "Invalid function type for requesting external signature.");
@@ -3235,7 +3235,7 @@ TypePointers FunctionType::parseElementaryTypeVector(strings const& _types)
 
 TypePointer FunctionType::copyAndSetGasOrValue(bool _setGas, bool _setValue) const
 {
-	solAssert(m_kind != Kind::Definition, "");
+	solAssert(m_kind != Kind::Declaration, "");
 	return TypeProvider::function(
 		m_parameterTypes,
 		m_returnParameterTypes,
